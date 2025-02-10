@@ -105,8 +105,14 @@ const request = async <Response>(
         method
     })
     const payload: Response = await res.json()
-    const data = { status: res.status, payload }
+ 
 
+
+    const data = {
+        status: res.status,
+        payload
+    }
+    
     // Interceptor là nời chúng ta xử lý request và response trước khi trả về cho phía component
     if (!res.ok) {
         if (res.status === ENTITY_ERROR_STATUS) {
@@ -148,14 +154,15 @@ const request = async <Response>(
         } else {
             throw new HttpError(data)
         }
-    }
+    } 
     // Đảm bảo logic dưới đây chỉ chạy ở phía client (browser)
     if (isClient) {
         const normalizeUrl = normalizePath(url)
         if (['api/auth/login', 'api/guest/auth/login'].includes(normalizeUrl)) {
-            const { accessToken, refreshToken } = (payload as LoginResType).data
-            localStorage.setItem('accessToken', accessToken)
-            localStorage.setItem('refreshToken', refreshToken)
+            console.log('payload', payload)
+            const data  = (payload as LoginResType).data
+            localStorage.setItem('accessToken', data.accessToken)
+            localStorage.setItem('refreshToken', data.refreshToken)
         } else if (normalizeUrl === 'api/auth/logout') {
             localStorage.removeItem('accessToken')
             localStorage.removeItem('refreshToken')
