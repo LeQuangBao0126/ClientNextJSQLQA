@@ -12,9 +12,6 @@ export async function POST(request: Request) {
         const { accessToken, refreshToken }   =payload.data
         const decodedAccessToken = jwt.decode(accessToken) as { exp: number }
         const decodedRefreshToken = jwt.decode(refreshToken) as { exp: number }
-
-      
-
         cookieStore.set('accessToken', accessToken, {
             path: '/',
             sameSite:'lax',
@@ -22,7 +19,7 @@ export async function POST(request: Request) {
             secure: true,
             expires: decodedAccessToken.exp * 1000
         })
-        cookieStore.set('refreshToken', accessToken, {
+        cookieStore.set('refreshToken', refreshToken, {
             path: '/',
             sameSite:'lax',
             httpOnly: true,

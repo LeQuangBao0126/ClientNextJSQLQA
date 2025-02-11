@@ -11,9 +11,10 @@ export function middleware(request: NextRequest) {
     const {pathname } =request.nextUrl
     
     const isAuth = Boolean( request.cookies.get('accessToken')?.value )
+   
     // chua dang nhap thi ko cho vao private path 
     if(privatePaths.some(path => pathname.startsWith(path)) && !isAuth) { 
-        return NextResponse.redirect('/login')
+        return NextResponse.redirect(new URL('/login' ))
     } 
     // dnagnhap roi thi se ko cho vao login nữa
     if(isAuthPaths.some(path => pathname.startsWith(path)) && isAuth) { 
@@ -23,5 +24,5 @@ export function middleware(request: NextRequest) {
 }
 
 export const config = {
-    matcher:  [    '/manage/:path*' ]
+    matcher:  [ '/manage/:path*' ,'/login']
   }
