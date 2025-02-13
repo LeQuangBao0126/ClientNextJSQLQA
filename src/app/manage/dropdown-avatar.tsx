@@ -12,7 +12,7 @@ import { Button } from '@/components/ui/button'
 import Link from 'next/link'
 import { useLogoutMutation } from '@/queries/useAuth'
 import { useRouter } from 'next/navigation'
-import { useAccountProfile } from '@/queries/useAccount'
+import { useAccountMe } from '@/queries/useAccount'
 
 
 export default function DropdownAvatar() {
@@ -28,9 +28,9 @@ export default function DropdownAvatar() {
         } catch (error) {
         }
     }
-
-    const {data} = useAccountProfile()
-    const account = data?.payload.data 
+    let  account :  any  =null 
+    const data =   useAccountMe(   )
+    account = data.data?.payload.data
 
     return (
         <DropdownMenu>

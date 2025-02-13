@@ -105,8 +105,6 @@ const request = async <Response>(
         method
     })
     const payload: Response = await res.json()
- 
-
 
     const data = {
         status: res.status,
@@ -144,15 +142,16 @@ const request = async <Response>(
                     }
                 }
             } else {
-                // Đây là trường hợp khi mà chúng ta vẫn còn access token (còn hạn)
+                
                 // Và chúng ta gọi API ở Next.js Server (Route Handler , Server Component) đến Server Backend
                 const accessToken = (options?.headers as any)?.Authorization.split(
                     'Bearer '
                 )[1]
+                // loi 401 cho về logout 
                 redirect(`/logout?accessToken=${accessToken}`)
             }
         } else {
-            throw new HttpError(data)
+            throw new HttpError({status : data.status, payload: data.payload ,message: "lỗi Server trả về "})
         }
     } 
     // Đảm bảo logic dưới đây chỉ chạy ở phía client (browser)

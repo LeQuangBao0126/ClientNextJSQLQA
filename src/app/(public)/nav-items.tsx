@@ -28,10 +28,9 @@ const menuItems = [
 
 export default function NavItems({ className }: { className?: string }) {
     const [isAuth , setIsAuth] = useState(false) 
-    console.log("isAuth" , isAuth)  
+    
     useEffect(() => {
-        const a = Boolean(getAccessTokenFromLocalStorage() )
-        setIsAuth(a) 
+        setIsAuth(Boolean(getAccessTokenFromLocalStorage() )) 
     }, []) 
 
   return menuItems.map((item) => {

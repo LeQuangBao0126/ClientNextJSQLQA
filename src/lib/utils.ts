@@ -1,3 +1,4 @@
+
 import { clsx, type ClassValue } from "clsx"
 import { UseFormSetError } from "react-hook-form"
 import { twMerge } from "tailwind-merge"
@@ -41,5 +42,9 @@ export const handleErrorApi = ({
     }
   }
   
-export const getAccessTokenFromLocalStorage = () =>  localStorage.getItem('accessToken')
-export const getRefreshTokenFromLocalStorage = () =>  localStorage.getItem('refreshToken')
+export const getAccessTokenFromLocalStorage = () =>  {
+    return localStorage.getItem('accessToken')
+}
+export const getRefreshTokenFromLocalStorage = () =>  {
+    return localStorage.getItem('refreshToken')
+}
