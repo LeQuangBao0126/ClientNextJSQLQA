@@ -10,13 +10,17 @@ export default function LogoutPage() {
     const router = useRouter()
     const ref = useRef<any>(null)
     const searchParams = useSearchParams()
+    const refreshToken =searchParams.get('refreshToken')
+    const accessToken =searchParams.get('accessToken')
 
     // nếu refreshToken từ url = refreshToken thì mới cho logout 
 
     useEffect(() => {
-        if(ref.current || 
-                searchParams.get('refreshToken') !== getRefreshTokenFromLocalStorage()
-             
+        if(ref.current 
+             || 
+             refreshToken && refreshToken !== getRefreshTokenFromLocalStorage() 
+             ||
+             accessToken && accessToken!== getAccessTokenFromLocalStorage()
         ) {
             return 
         } 

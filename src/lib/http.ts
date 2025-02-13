@@ -142,8 +142,8 @@ const request = async <Response>(
                     }
                 }
             } else {
-                
-                // Và chúng ta gọi API ở Next.js Server (Route Handler , Server Component) đến Server Backend
+                // đây là trường hợp access token còn hạn . và gọi ở next handler đến api backend và BE trả về 401 
+                // thì cho logout 
                 const accessToken = (options?.headers as any)?.Authorization.split(
                     'Bearer '
                 )[1]
