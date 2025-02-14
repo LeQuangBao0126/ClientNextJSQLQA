@@ -24,9 +24,10 @@ export function middleware(request: NextRequest) {
     } 
     // đăng nhập rồi nhưng access token hết hạn => logout 
     if(privatePaths.some(path => pathname.startsWith(path)) && !accessToken) {  // accesstoken het han 
-        const url =new URL('/logout' ,request.url)
-        url.searchParams.set('refreshToken', request.cookies.get('refreshToken')?.value ?? "")
-        return NextResponse.redirect(url )
+        const url =new URL('/refresh-token' ,request.url)
+          url.searchParams.set('refreshToken', request.cookies.get('refreshToken')?.value ?? "")
+          url.searchParams.set('redirect', pathname)
+        return NextResponse.redirect(url)
     } 
   
     return NextResponse.next()

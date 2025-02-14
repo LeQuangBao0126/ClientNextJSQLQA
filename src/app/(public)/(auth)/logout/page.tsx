@@ -1,4 +1,5 @@
 'use client'
+import { useAppContext } from '@/components/app-provider'
 import { getAccessTokenFromLocalStorage, getRefreshTokenFromLocalStorage } from '@/lib/utils'
 import { useLogoutMutation } from '@/queries/useAuth'
 import { useRouter, useSearchParams } from 'next/navigation'
@@ -10,27 +11,28 @@ export default function LogoutPage() {
     const router = useRouter()
     const ref = useRef<any>(null)
     const searchParams = useSearchParams()
-    const refreshToken =searchParams.get('refreshToken')
-    const accessToken =searchParams.get('accessToken')
-
+    const refreshToken = searchParams.get('refreshToken')
+    const accessToken = searchParams.get('accessToken')
+    const { setIsAuth } = useAppContext()
     // nếu refreshToken từ url = refreshToken thì mới cho logout 
 
     useEffect(() => {
-        if(ref.current 
-             || 
-             refreshToken && refreshToken !== getRefreshTokenFromLocalStorage() 
-             ||
-             accessToken && accessToken!== getAccessTokenFromLocalStorage()
+        if (ref.current
+            ||
+            refreshToken && refreshToken !== getRefreshTokenFromLocalStorage()
+            ||
+            accessToken && accessToken !== getAccessTokenFromLocalStorage()
         ) {
-            return 
-        } 
+            return
+        }
         ref.current = mutateAsync
         mutateAsync().then(() => {
             console.log("Log out thanh cong ")
-            ref.current = null 
+            ref.current = null
+            setIsAuth(false)
             router.push("/login")
-        }) 
-        return 
+        })
+        return
     }, [router])
 
     return (
