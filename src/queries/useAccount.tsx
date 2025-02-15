@@ -24,10 +24,11 @@ export const useGetAccountList = () => {
     })
 }
 
-export const useGetAccount = ({ id }: { id: number }) => {
+export const useGetAccount = ({ id ,enabled }: { id: number , enabled :boolean }) => {
     return useQuery({
         queryKey: [`account`, id],
-        queryFn: () => accountAPIRequest.getEmployee(id)
+        queryFn: () => accountAPIRequest.getEmployee(id),
+        enabled: enabled
     })
 }
 export const useAddAccountMutation = () => {
@@ -36,7 +37,7 @@ export const useAddAccountMutation = () => {
         mutationFn: accountAPIRequest.addEmployee,
         onSuccess: () => queryClient.invalidateQueries({
             // add thanh cong thi invalidate để load lại danh sách
-            queryKey: [`accounts `]
+            queryKey: [`accounts`]
         })
     })
 }
@@ -50,7 +51,7 @@ export const useUpdateAccountMutation = () => {
         },
         onSuccess: () => queryClient.invalidateQueries({
             // add thanh cong thi invalidate để load lại danh sách
-            queryKey: [`accounts `]
+            queryKey: [`accounts`]
         })
     })
 }
@@ -60,7 +61,7 @@ export const useDeleteAccountMutation = () => {
     return useMutation({
         mutationFn: accountAPIRequest.deleteEmployee,
         onSuccess: () => queryClient.invalidateQueries({
-            queryKey: [`accounts `]
+            queryKey: [`accounts`]
         })
     })
 }
