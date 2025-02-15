@@ -3,10 +3,9 @@ import { useAppContext } from '@/components/app-provider'
 import { getAccessTokenFromLocalStorage, getRefreshTokenFromLocalStorage } from '@/lib/utils'
 import { useLogoutMutation } from '@/queries/useAuth'
 import { useRouter, useSearchParams } from 'next/navigation'
-import React, { useEffect, useRef } from 'react'
+import React, { Suspense, useEffect, useRef } from 'react'
 
-
-export default function LogoutPage() {
+function Logout() {
     const { mutateAsync } = useLogoutMutation()
     const router = useRouter()
     const ref = useRef<any>(null)
@@ -39,3 +38,10 @@ export default function LogoutPage() {
         <div>Logout Loading ....................... </div>
     )
 }
+
+export default function LogoutPage() {
+    return <Suspense>
+        <Logout />
+    </Suspense>
+}
+
