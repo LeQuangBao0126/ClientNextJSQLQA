@@ -9,6 +9,8 @@ import authAPIRequests from "@/apiRequests/auth"
 import { DishStatus, OrderStatus, TableStatus } from "@/constants/type"
 import envConfig from "@/config"
 import { TokenPayload } from "@/types/jwt.types"
+import guestAPIRequests from "@/apiRequests/guest"
+import { RefreshTokenResType } from "@/schemaValidations/auth.schema"
 
 
 export function cn(...inputs: ClassValue[]) {
@@ -78,8 +80,8 @@ export const checkAndRefreshToken = async (params?: {
 
     if (!accessToken || !refreshToken) return
 
-    const decodedAccessToken = jwt.decode(accessToken) as { exp: number, iat: number }
-    const decodedRefreshToken = jwt.decode(refreshToken) as { exp: number, iat: number }
+    const decodedAccessToken = decodedToken(accessToken)
+    const decodedRefreshToken = decodedToken(refreshToken)
     // thời điểm hết hạn của token là s 
     // new Date().getTime() là epochtime là ms 
     const now = Math.round(new Date().getTime() / 1000)
@@ -90,9 +92,12 @@ export const checkAndRefreshToken = async (params?: {
     if (decodedAccessToken.exp - now < (decodedAccessToken.exp - decodedAccessToken.iat) / 3) {
         // Gọi api refreshToken 
         try {
-            const { payload } = await authAPIRequests.refreshToken()
-            setAccessTokenToLocalStorage(payload.data.accessToken)
-            setRefreshTokenToLocalStorage(payload.data.refreshToken)
+            const role = decodedRefreshToken.role
+
+            const res =  role==="Guest" ? await guestAPIRequests.refreshToken() : await authAPIRequests.refreshToken()
+           
+            setAccessTokenToLocalStorage(res.payload.data.accessToken)
+            setRefreshTokenToLocalStorage(res.payload.data.refreshToken)
 
             params?.onSuccess && params.onSuccess()
 
@@ -100,6 +105,7 @@ export const checkAndRefreshToken = async (params?: {
         } catch (error) {
             //clearInterval(interval)
             params?.onError && params.onError()
+            throw error
         }
     }
 }
@@ -153,6 +159,6 @@ export const getTableLink = ({ token, tableNumber }: { token: string; tableNumbe
     return envConfig.NEXT_PUBLIC_URL + '/tables/' + tableNumber + '?token=' + token
 }
 
-export const decodedToken = ( token : string ) => { 
-    return jwt.decode(token )  as TokenPayload
+export const decodedToken = (token: string) => {
+    return jwt.decode(token) as TokenPayload
 }

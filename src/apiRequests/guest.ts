@@ -18,13 +18,17 @@ const guestAPIRequests = {
     sRefreshToken: (body: RefreshTokenBodyType) => http.post<RefreshTokenResType>(`${prefix}/auth/refresh-token`, body),   // server backend 
 
     async refreshToken() {
-        if (this.refreshTokenRequest) {
-            return this.refreshTokenRequest
+        try {
+            if (this.refreshTokenRequest) {
+                return this.refreshTokenRequest
+            }
+            this.refreshTokenRequest = http.post<RefreshTokenResType>(`api/guest/auth/refresh-token`, null, { baseUrl: '' })
+            const result = await this.refreshTokenRequest
+            this.refreshTokenRequest = null   
+            return result
+        } catch (error) {
+                throw error
         }
-        this.refreshTokenRequest = http.post<RefreshTokenResType>(`api/guest/auth/refresh-token`, null, { baseUrl: '' })
-        const result = await this.refreshTokenRequest
-        this.refreshTokenRequest = null  // reset lại promisse này 
-        return result
     }
 }
 

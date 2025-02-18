@@ -1,5 +1,3 @@
-import authAPIRequests from "@/apiRequests/auth"
-import { RefreshTokenBodyType } from "@/schemaValidations/auth.schema"
 import { cookies } from "next/headers"
 import jwt from 'jsonwebtoken'
 import guestAPIRequests from "@/apiRequests/guest"
@@ -7,7 +5,7 @@ import guestAPIRequests from "@/apiRequests/guest"
 export async function POST(request: Request) {
      
     const cookieStore = await cookies()
-    const refreshToken = cookieStore.get("guestRefreshToken")?.value
+    const refreshToken = cookieStore.get("refreshToken")?.value
 
     if(!refreshToken) { 
         return Response.json({

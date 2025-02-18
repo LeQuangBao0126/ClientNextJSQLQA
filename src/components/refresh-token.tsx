@@ -1,20 +1,21 @@
 'use client'
-import { checkAndRefreshToken, getAccessTokenFromLocalStorage, getRefreshTokenFromLocalStorage, setAccessTokenToLocalStorage, setRefreshTokenToLocalStorage } from '@/lib/utils'
-import { usePathname, useSearchParams } from 'next/navigation'
+import { checkAndRefreshToken  } from '@/lib/utils'
+import { usePathname   } from 'next/navigation'
 import React, { useEffect } from 'react'
-import jwt from 'jsonwebtoken'
-import authAPIRequests from '@/apiRequests/auth'
+ 
 
 /**
  *  Page này có chức năng interval để refresh token mới,  ko cho access token hết hạn . 
  */
 const UNAUTHENTICATEPAGE = ['/login', '/logout', '/refresh-token']
-export default function RefreshTokenComponent() {
+const guestTable =  '/tables'
+export default function RefreshTokenPage() {
     const pathname = usePathname()
 
     useEffect(() => {
         // những trang nào cần check thì mới cho chạy refresh token  .
         if (UNAUTHENTICATEPAGE.includes(pathname)) return  
+        if (pathname.startsWith('/tables')) return 
 
         let interval: any = null
         // check accessToken sắp hết hạn thì gọi refresh 

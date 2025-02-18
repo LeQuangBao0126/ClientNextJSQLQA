@@ -38,6 +38,7 @@ export default function AppProvider({ children }: { children: React.ReactNode })
         if (role) {
             setRoleState(role)
         } else {
+            setRoleState(undefined)
             removeTokensFromLocalStorage()
         }
     }

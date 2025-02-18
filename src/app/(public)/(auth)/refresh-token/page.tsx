@@ -1,7 +1,6 @@
 'use client'
-import { checkAndRefreshToken, getAccessTokenFromLocalStorage, getRefreshTokenFromLocalStorage } from '@/lib/utils'
-import { useLogoutMutation } from '@/queries/useAuth'
-import { redirect, useRouter, useSearchParams } from 'next/navigation'
+import { checkAndRefreshToken,getRefreshTokenFromLocalStorage } from '@/lib/utils'
+import {  useRouter, useSearchParams } from 'next/navigation'
 import React, { Suspense, useEffect } from 'react'
 function RefreshToken() {
 
@@ -18,7 +17,6 @@ function RefreshToken() {
                     console.log("error ")
                 },
                 onSuccess: () => {
-                    console.log("aasdasdsad", redirectPathname)
                     router.push(redirectPathname || '/')
                 }
             })

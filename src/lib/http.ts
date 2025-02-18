@@ -165,7 +165,7 @@ const request = async <Response>(
             setAccessTokenToLocalStorage(data.accessToken)
             setRefreshTokenToLocalStorage(data.refreshToken)
         }
-        else if (normalizeUrl === 'api/auth/logout') {
+        else if (['api/auth/logout', 'api/guest/auth/logout'].includes(normalizeUrl)) {
             removeTokensFromLocalStorage()
         }
     }
