@@ -8,6 +8,7 @@ import jwt from 'jsonwebtoken'
 import authAPIRequests from "@/apiRequests/auth"
 import { DishStatus, OrderStatus, TableStatus } from "@/constants/type"
 import envConfig from "@/config"
+import { TokenPayload } from "@/types/jwt.types"
 
 
 export function cn(...inputs: ClassValue[]) {
@@ -89,7 +90,6 @@ export const checkAndRefreshToken = async (params?: {
     if (decodedAccessToken.exp - now < (decodedAccessToken.exp - decodedAccessToken.iat) / 3) {
         // Gọi api refreshToken 
         try {
-            console.log("start refresh ")
             const { payload } = await authAPIRequests.refreshToken()
             setAccessTokenToLocalStorage(payload.data.accessToken)
             setRefreshTokenToLocalStorage(payload.data.refreshToken)
@@ -151,4 +151,8 @@ export const getVietnameseTableStatus = (status: (typeof TableStatus)[keyof type
 
 export const getTableLink = ({ token, tableNumber }: { token: string; tableNumber: number }) => {
     return envConfig.NEXT_PUBLIC_URL + '/tables/' + tableNumber + '?token=' + token
+}
+
+export const decodedToken = ( token : string ) => { 
+    return jwt.decode(token )  as TokenPayload
 }

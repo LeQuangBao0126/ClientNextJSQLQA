@@ -12,7 +12,7 @@ function Logout() {
     const searchParams = useSearchParams()
     const refreshToken = searchParams.get('refreshToken')
     const accessToken = searchParams.get('accessToken')
-    const { setIsAuth } = useAppContext()
+    const { setRole } = useAppContext()
     // nếu refreshToken từ url = refreshToken thì mới cho logout 
 
     useEffect(() => {
@@ -28,7 +28,7 @@ function Logout() {
         mutateAsync().then(() => {
             console.log("Log out thanh cong ")
             ref.current = null
-            setIsAuth(false)
+            setRole()
             router.push("/login")
         })
         return

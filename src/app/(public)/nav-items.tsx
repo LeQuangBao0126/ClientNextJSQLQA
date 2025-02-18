@@ -1,42 +1,40 @@
 'use client'
 
 import { useAppContext } from '@/components/app-provider'
-import { getAccessTokenFromLocalStorage } from '@/lib/utils'
 import Link from 'next/link'
-import { useEffect, useState } from 'react'
 
 const menuItems = [
-  {
-    title: 'Món ăn',
-    href: '/menu'    // authRequired undefined dang nhap hay chua cũng hiển thị
-  },
-  {
-    title: 'Đơn hàng',
-    href: '/orders',
-    authRequired: true ,
-  },
-  {
-    title: 'Đăng nhập',
-    href: '/login',
-    authRequired: false  // chưa đăng nhập cũng hiển thị
-  },
-  {
-    title: 'Quản lý',
-    href: '/manage/dashboard',
-    authRequired: true
-  }
+    {
+        title: 'Món ăn',
+        href: '/menu'    // authRequired undefined dang nhap hay chua cũng hiển thị
+    },
+    {
+        title: 'Đơn hàng',
+        href: '/orders',
+        authRequired: true,
+    },
+    {
+        title: 'Đăng nhập',
+        href: '/login',
+        authRequired: false  // chưa đăng nhập cũng hiển thị
+    },
+    {
+        title: 'Quản lý',
+        href: '/manage/dashboard',
+        authRequired: true
+    }
 ]
 
 export default function NavItems({ className }: { className?: string }) {
-   const {isAuth , setIsAuth} = useAppContext()
-   console.log("isAUTH  " , isAuth)
-   return menuItems.map((item) => {
-    if((item.authRequired === false &&   isAuth ) || (item.authRequired === true && !isAuth)) return null
+    const { isAuth } = useAppContext()
 
-    return (
-      <Link href={item.href} key={item.href} className={className}>
-        {item.title}
-      </Link>
-    )
-  })
+    return menuItems.map((item) => {
+        if ((item.authRequired === false && isAuth) || (item.authRequired === true && !isAuth)) return null
+
+        return (
+            <Link href={item.href} key={item.href} className={className}>
+                {item.title}
+            </Link>
+        )
+    })
 }

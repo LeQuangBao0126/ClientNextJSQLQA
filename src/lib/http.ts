@@ -1,6 +1,10 @@
 import envConfig from '@/config'
 import {
-    normalizePath
+    getAccessTokenFromLocalStorage,
+    normalizePath,
+    removeTokensFromLocalStorage,
+    setAccessTokenToLocalStorage,
+    setRefreshTokenToLocalStorage
 } from '@/lib/utils'
 import { LoginResType } from '@/schemaValidations/auth.schema'
 import { redirect } from 'next/navigation'
@@ -81,7 +85,7 @@ const request = async <Response>(
                 'Content-Type': 'application/json'
             }
     if (isClient) {
-        const accessToken = localStorage.getItem('accessToken')
+        const accessToken = getAccessTokenFromLocalStorage()
         if (accessToken) {
             baseHeaders.Authorization = `Bearer ${accessToken}`
         }
@@ -110,7 +114,7 @@ const request = async <Response>(
         status: res.status,
         payload
     }
-    
+
     // Interceptor là nời chúng ta xử lý request và response trước khi trả về cho phía component
     if (!res.ok) {
         if (res.status === ENTITY_ERROR_STATUS) {
@@ -134,8 +138,7 @@ const request = async <Response>(
                         await clientLogoutRequest
                     } catch (error) {
                     } finally {
-                        localStorage.removeItem('accessToken')
-                        localStorage.removeItem('refreshToken')
+                        removeTokensFromLocalStorage()
                         clientLogoutRequest = null
                         // redirect ve trang login co the loop vo han . neu ko xu ly dung cach 
                         location.href = `/login`
@@ -151,20 +154,19 @@ const request = async <Response>(
                 redirect(`/logout?accessToken=${accessToken}`)
             }
         } else {
-            throw new HttpError({status : data.status, payload: data.payload ,message: "lỗi Server trả về "})
+            throw new HttpError({ status: data.status, payload: data.payload, message: "lỗi Server trả về " })
         }
-    } 
+    }
     // Đảm bảo logic dưới đây chỉ chạy ở phía client (browser)
     if (isClient) {
         const normalizeUrl = normalizePath(url)
         if (['api/auth/login', 'api/guest/auth/login'].includes(normalizeUrl)) {
-            console.log('payload', payload)
-            const data  = (payload as LoginResType).data
-            localStorage.setItem('accessToken', data.accessToken)
-            localStorage.setItem('refreshToken', data.refreshToken)
-        } else if (normalizeUrl === 'api/auth/logout') {
-            localStorage.removeItem('accessToken')
-            localStorage.removeItem('refreshToken')
+            const data = (payload as LoginResType).data
+            setAccessTokenToLocalStorage(data.accessToken)
+            setRefreshTokenToLocalStorage(data.refreshToken)
+        }
+        else if (normalizeUrl === 'api/auth/logout') {
+            removeTokensFromLocalStorage()
         }
     }
     return data

@@ -14,7 +14,7 @@ export default function RefreshTokenComponent() {
 
     useEffect(() => {
         // những trang nào cần check thì mới cho chạy refresh token  .
-        if (UNAUTHENTICATEPAGE.includes(pathname)) return
+        if (UNAUTHENTICATEPAGE.includes(pathname)) return  
 
         let interval: any = null
         // check accessToken sắp hết hạn thì gọi refresh 

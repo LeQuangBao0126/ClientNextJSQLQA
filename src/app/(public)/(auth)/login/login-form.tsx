@@ -11,6 +11,7 @@ import { toast } from '@/hooks/use-toast'
 import {useLoginMutation} from '@/queries/useAuth'
 import { handleErrorApi } from '@/lib/utils'
 import { useRouter } from 'next/navigation'
+import { useAppContext } from '@/components/app-provider'
 
 export default function LoginForm() {
     const form = useForm<LoginBodyType>({
@@ -22,15 +23,15 @@ export default function LoginForm() {
     })
     const router = useRouter()
     const loginMutation = useLoginMutation()
-
+    const { setRole } = useAppContext()
     const onSubmit = async (data: LoginBodyType) => {
         if (loginMutation.isPending) return
         const res = await loginMutation.mutateAsync(data)
         toast({ description: res.payload.message  , variant: 'default' })
+        setRole(res.payload.data.account.role) 
         router.push("/manage/dashboard")
     }
     const onSubmitError = (error: any) => {
-        console.log("error" , error)
         handleErrorApi({error,setError:form.setError})
     }
 

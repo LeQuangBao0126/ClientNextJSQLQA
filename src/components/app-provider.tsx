@@ -7,7 +7,8 @@ import {
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools'
 import RefreshTokenComponent from './refresh-token'
 import { createContext, useContext, useEffect, useState } from 'react'
-import { getAccessTokenFromLocalStorage, removeTokensFromLocalStorage } from '@/lib/utils'
+import { decodedToken, getAccessTokenFromLocalStorage, removeTokensFromLocalStorage } from '@/lib/utils'
+import { RoleType } from '@/types/jwt.types'
 
 const queryClient = new QueryClient({
     defaultOptions: {
@@ -20,29 +21,37 @@ const queryClient = new QueryClient({
 })
 
 const AppContext = createContext({
-    isAuth: false, setIsAuth: (isAuth: boolean) => { }
+    isAuth: false,
+    role: undefined as RoleType | undefined,
+    setRole: (role?: RoleType | undefined) => { },
+ 
+
 })
+// sử dụng useAppContext bất cứ đâu => để lấy trạng thái state chung  của app 
 export const useAppContext = () => {
     return useContext(AppContext)
 }
 export default function AppProvider({ children }: { children: React.ReactNode }) {
-    const [isAuth, setIsAuthState] = useState(false)
-    const setIsAuth = ( isAuthen : boolean) => {
-        if (isAuthen) {
-            setIsAuthState(true )
+    const [role, setRoleState] = useState<RoleType | undefined>()
+
+    const setRole = (role: RoleType | undefined) => {
+        if (role) {
+            setRoleState(role)
         } else {
-            setIsAuthState(false )
             removeTokensFromLocalStorage()
         }
     }
-    useEffect( () => { 
+    useEffect(() => {
         const accessToken = getAccessTokenFromLocalStorage()
-        if(accessToken){
-            setIsAuth(true )
+        if (accessToken) {
+            // decode and set role for entire app 
+            const decoded = decodedToken(accessToken)
+            setRoleState(decoded.role)
         }
-    },[ ])
+    }, [])
+    const isAuth = Boolean(role)
     return (
-        <AppContext value={{ isAuth, setIsAuth }} >
+        <AppContext value={{ role, setRole, isAuth }} >
             <QueryClientProvider client={queryClient}>
                 {children}
                 <RefreshTokenComponent />
