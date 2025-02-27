@@ -1,5 +1,4 @@
 import authAPIRequests from "@/apiRequests/auth"
-import { RefreshTokenBodyType } from "@/schemaValidations/auth.schema"
 import { cookies } from "next/headers"
 import jwt from 'jsonwebtoken'
 
@@ -7,7 +6,7 @@ export async function POST(request: Request) {
      
     const cookieStore = await cookies()
     const refreshToken = cookieStore.get("refreshToken")?.value
-
+    console.log("admin refresh token >>>>> " ,refreshToken)
     if(!refreshToken) { 
         return Response.json({
             message :'Không tìm thấy refresh token',

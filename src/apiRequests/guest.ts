@@ -1,7 +1,7 @@
 import http from "@/lib/http";
 import { LogoutBodyType, RefreshTokenBodyType, RefreshTokenResType } from "@/schemaValidations/auth.schema";
 import { MessageResType } from "@/schemaValidations/common.schema";
-import { GuestLoginBodyType, GuestLoginResType } from "@/schemaValidations/guest.schema";
+import { GuestCreateOrdersBodyType, GuestCreateOrdersResType, GuestGetOrdersResType, GuestLoginBodyType, GuestLoginResType } from "@/schemaValidations/guest.schema";
 
 const prefix = '/guest'
 const guestAPIRequests = {
@@ -29,7 +29,10 @@ const guestAPIRequests = {
         } catch (error) {
                 throw error
         }
-    }
+    },
+
+    order: (body :GuestCreateOrdersBodyType ) => http.post<GuestCreateOrdersResType>(`${prefix}/orders`,  body  ),
+    getOrderList :() => http.get<GuestGetOrdersResType>(`${prefix}/orders`),
 }
 
 

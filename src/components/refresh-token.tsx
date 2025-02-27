@@ -1,39 +1,37 @@
 'use client'
 import { checkAndRefreshToken  } from '@/lib/utils'
 import { usePathname   } from 'next/navigation'
-import React, { useEffect } from 'react'
- 
+import React, { useEffect, useRef } from 'react'
 
 /**
  *  Page này có chức năng interval để refresh token mới,  ko cho access token hết hạn . 
  */
 const UNAUTHENTICATEPAGE = ['/login', '/logout', '/refresh-token']
-const guestTable =  '/tables'
+ let interval: any = null
 export default function RefreshTokenPage() {
+    const ref = useRef<any>(null)
     const pathname = usePathname()
-
     useEffect(() => {
         // những trang nào cần check thì mới cho chạy refresh token  .
         if (UNAUTHENTICATEPAGE.includes(pathname)) return  
-        if (pathname.startsWith('/tables')) return 
-
-        let interval: any = null
         // check accessToken sắp hết hạn thì gọi refresh 
+            checkAndRefreshToken()
+            const timeOut = 1500
+            
+            if(interval) {
+                return 
+            } 
 
-        checkAndRefreshToken({
-            onError: () => {
-                clearInterval(interval)
-            }
-        })
-        const timeOut = 1000
-        interval = setInterval(() => checkAndRefreshToken({
-            onError: () => {
-                clearInterval(interval)
-            }
-        }), timeOut)
-
+            interval = setInterval( ()=>{ 
+                checkAndRefreshToken({
+                   onError: () => {
+                       clearInterval(interval)
+                   },
+               }) 
+            } ,timeOut )
+ 
         return () => {
-            clearInterval(interval)
+            clearInterval( interval )
         }
 
     }, [pathname])

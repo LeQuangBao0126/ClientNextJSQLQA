@@ -1,11 +1,9 @@
-import AddEmployee from "@/app/manage/accounts/add-employee"
 import http from "@/lib/http"
 import { AccountListResType, AccountResType, CreateEmployeeAccountBodyType, UpdateEmployeeAccountBodyType, UpdateMeBodyType } from "@/schemaValidations/account.schema"
 
 const prefix = '/accounts'
 const accountAPIRequest = {
     me: () => http.get<AccountResType>(`${prefix}/me`),
-    sMe: (accessToken: string) => http.get<AccountResType>(`${prefix}/me`, { headers: { Authorization: `Bearer ${accessToken}` } }),
     updateMe: (body: UpdateMeBodyType) => http.put<AccountResType>(`${prefix}/me`, body), // route handle nextjs server
     
     list:() =>http.get<AccountListResType>(prefix),

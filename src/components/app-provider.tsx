@@ -55,10 +55,11 @@ export default function AppProvider({ children }: { children: React.ReactNode })
         <AppContext value={{ role, setRole, isAuth }} >
             <QueryClientProvider client={queryClient}>
                 {children}
-                <RefreshTokenComponent />
+                 <RefreshTokenComponent /> 
                 <ReactQueryDevtools initialIsOpen={false} />
             </QueryClientProvider>
         </AppContext>
 
     )
 }
+ 

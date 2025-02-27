@@ -2,7 +2,7 @@ import dishAPIRequest from "@/apiRequests/dish";
 import { UpdateDishBodyType } from "@/schemaValidations/dish.schema";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 
-export const useGetDishList = () => useQuery({
+export const useDishListQuery = () => useQuery({
     queryKey: ['dishes'],
     queryFn: dishAPIRequest.list,
 })

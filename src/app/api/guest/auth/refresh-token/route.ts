@@ -3,10 +3,9 @@ import jwt from 'jsonwebtoken'
 import guestAPIRequests from "@/apiRequests/guest"
 
 export async function POST(request: Request) {
-     
     const cookieStore = await cookies()
     const refreshToken = cookieStore.get("refreshToken")?.value
-
+    console.log("guest refresh token >>>>> " ,refreshToken)
     if(!refreshToken) { 
         return Response.json({
             message :'Không tìm thấy refresh token',
@@ -32,11 +31,12 @@ export async function POST(request: Request) {
             sameSite: 'lax',
             httpOnly: true,
             secure: true,
-            expires: decodedRefreshToken.exp * 1000
+            expires: decodedRefreshToken.exp * 10000
         })
         // api tu backend tra ve gi . thi route handler tra ve client nhu v luon
         return Response.json(payload)
     } catch (error : any ) {
+        console.log(error)
         return Response.json({ message: 'Something went wrong in server when refresh token ' , status:401 })
     }
 }

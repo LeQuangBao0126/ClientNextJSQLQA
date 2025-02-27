@@ -5,13 +5,16 @@ import { twMerge } from "tailwind-merge"
 import { EntityError } from "./http"
 import { toast } from "@/hooks/use-toast"
 import jwt from 'jsonwebtoken'
-import authAPIRequests from "@/apiRequests/auth"
-import { DishStatus, OrderStatus, TableStatus } from "@/constants/type"
+import { DishStatus, OrderStatus, Role, TableStatus } from "@/constants/type"
 import envConfig from "@/config"
 import { TokenPayload } from "@/types/jwt.types"
 import guestAPIRequests from "@/apiRequests/guest"
-import { RefreshTokenResType } from "@/schemaValidations/auth.schema"
-
+import { format } from 'date-fns'
+import { BookX, CookingPot, HandCoins, Loader, Truck } from 'lucide-react'
+import authAPIRequests from "@/apiRequests/auth"
+import { redirect } from "next/navigation"
+ 
+ 
 
 export function cn(...inputs: ClassValue[]) {
     return twMerge(clsx(inputs))
@@ -59,53 +62,61 @@ export const getRefreshTokenFromLocalStorage = () => {
     return localStorage.getItem('refreshToken')
 }
 export const setAccessTokenToLocalStorage = (token: string) => {
-    localStorage.setItem('accessToken', token)
+    isBrowser && localStorage.setItem('accessToken', token)
 }
 export const setRefreshTokenToLocalStorage = (token: string) => {
-    localStorage.setItem('refreshToken', token)
+    isBrowser && localStorage.setItem('refreshToken', token)
 }
 export const removeTokensFromLocalStorage = () => {
     isBrowser && localStorage.removeItem('accessToken')
     isBrowser && localStorage.removeItem('refreshToken')
 }
 
-export const checkAndRefreshToken = async (params?: {
-    onError?: () => void,
+export const checkAndRefreshToken = async (param?: {
+    onError?: () => void
     onSuccess?: () => void
-}
-) => {
-
-    const accessToken = getAccessTokenFromLocalStorage() as string
+    force?: boolean
+}) => {
+    console.log("check refresh >>> ")
+    // Không nên đưa logic lấy access và refresh token ra khỏi cái function `checkAndRefreshToken`
+    // Vì để mỗi lần mà checkAndRefreshToken() được gọi thì chúng ta se có một access và refresh token mới
+    // Tránh hiện tượng bug nó lấy access và refresh token cũ ở lần đầu rồi gọi cho các lần tiếp theo
+    const accessToken = getAccessTokenFromLocalStorage()
     const refreshToken = getRefreshTokenFromLocalStorage()
-
+    // Chưa đăng nhập thì cũng không cho chạy
     if (!accessToken || !refreshToken) return
-
     const decodedAccessToken = decodedToken(accessToken)
     const decodedRefreshToken = decodedToken(refreshToken)
-    // thời điểm hết hạn của token là s 
-    // new Date().getTime() là epochtime là ms 
-    const now = Math.round(new Date().getTime() / 1000)
-
-    // refresh hết hạn thì cho lout out ko xử lý . accesstoken hết hạn thì xử lý 
-    // thời gian còn lại accessToken = exp  -  now 
-    // thời gian hết hạn accessToken = exp -iat 
-    if (decodedAccessToken.exp - now < (decodedAccessToken.exp - decodedAccessToken.iat) / 3) {
-        // Gọi api refreshToken 
+    // Thời điểm hết hạn của token là tính theo epoch time (s)
+    // Còn khi các bạn dùng cú pháp new Date().getTime() thì nó sẽ trả về epoch time (ms)
+    const now =  (new Date().getTime() / 1000 ) -1 
+    // trường hợp refresh token hết hạn thì cho logout
+    if (decodedRefreshToken.exp <= now) {
+        console.log("Refresh token đã hết hạn")
+        removeTokensFromLocalStorage()
+        redirect("/login")
+    }
+    // Ví dụ access token của chúng ta có thời gian hết hạn là 10s
+    // thì mình sẽ kiểm tra còn 1/3 thời gian (3s) thì mình sẽ cho refresh token lại
+    // Thời gian còn lại sẽ tính dựa trên công thức: decodedAccessToken.exp - now
+    // Thời gian hết hạn của access token dựa trên công thức: decodedAccessToken.exp - decodedAccessToken.iat
+    if (
+        param?.force ||
+        decodedAccessToken.exp - now <
+        (decodedAccessToken.exp - decodedAccessToken.iat) / 3
+    ) {
+        // Gọi API refresh token
         try {
             const role = decodedRefreshToken.role
+          
+            const res =  role === Role.Guest ? await guestAPIRequests.refreshToken() : await authAPIRequests.refreshToken()
 
-            const res =  role==="Guest" ? await guestAPIRequests.refreshToken() : await authAPIRequests.refreshToken()
-           
+
             setAccessTokenToLocalStorage(res.payload.data.accessToken)
             setRefreshTokenToLocalStorage(res.payload.data.refreshToken)
-
-            params?.onSuccess && params.onSuccess()
-
-            return
+            param?.onSuccess && param.onSuccess()
         } catch (error) {
-            //clearInterval(interval)
-            params?.onError && params.onError()
-            throw error
+            param?.onError && param.onError()
         }
     }
 }
@@ -162,3 +173,34 @@ export const getTableLink = ({ token, tableNumber }: { token: string; tableNumbe
 export const decodedToken = (token: string) => {
     return jwt.decode(token) as TokenPayload
 }
+
+
+export function removeAccents(str: string) {
+    return str
+        .normalize('NFD')
+        .replace(/[\u0300-\u036f]/g, '')
+        .replace(/đ/g, 'd')
+        .replace(/Đ/g, 'D')
+}
+
+export const simpleMatchText = (fullText: string, matchText: string) => {
+    return removeAccents(fullText.toLowerCase()).includes(removeAccents(matchText.trim().toLowerCase()))
+}
+
+export const formatDateTimeToLocaleString = (date: string | Date) => {
+    return format(date instanceof Date ? date : new Date(date), 'HH:mm:ss dd/MM/yyyy')
+}
+
+export const formatDateTimeToTimeString = (date: string | Date) => {
+    return format(date instanceof Date ? date : new Date(date), 'HH:mm:ss')
+}
+
+export const OrderStatusIcon = {
+    [OrderStatus.Pending]: Loader,
+    [OrderStatus.Processing]: CookingPot,
+    [OrderStatus.Rejected]: BookX,
+    [OrderStatus.Delivered]: Truck,
+    [OrderStatus.Paid]: HandCoins
+}
+
+

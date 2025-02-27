@@ -43,7 +43,7 @@ import AutoPagination from '@/components/auto-pagination'
 import { DishListResType } from '@/schemaValidations/dish.schema'
 import EditDish from '@/app/manage/dishes/edit-dish'
 import AddDish from '@/app/manage/dishes/add-dish'
-import { useDeleteDish, useGetDishList } from '@/queries/useDish'
+import { useDeleteDish, useDishListQuery,   } from '@/queries/useDish'
 import { toast } from '@/hooks/use-toast'
 
 type DishItem = DishListResType['data'][0]
@@ -187,7 +187,7 @@ export default  function DishTable() {
   const pageIndex = page - 1
   const [dishIdEdit, setDishIdEdit] = useState<number | undefined>()
   const [dishDelete, setDishDelete] = useState<DishItem | null>(null)
-  const  dataDishlist =   useGetDishList()
+  const  dataDishlist =   useDishListQuery()
 
   const data: any[] = dataDishlist.data?.payload.data ?? [] 
 
@@ -228,7 +228,7 @@ export default  function DishTable() {
       pageSize: PAGE_SIZE
     })
   }, [table, pageIndex])
-
+ 
   return (
     <DishTableContext.Provider value={{ dishIdEdit, setDishIdEdit, dishDelete, setDishDelete }}>
       <div className='w-full'>

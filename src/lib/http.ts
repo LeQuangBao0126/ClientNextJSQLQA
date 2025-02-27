@@ -149,12 +149,12 @@ const request = async <Response>(
                 // thì cho logout 
                 const accessToken = (options?.headers as any)?.Authorization.split(
                     'Bearer '
-                )[1]
-                // loi 401 cho về logout 
+                )[1] 
+                 
                 redirect(`/logout?accessToken=${accessToken}`)
             }
         } else {
-            throw new HttpError({ status: data.status, payload: data.payload, message: "lỗi Server trả về " })
+            throw new HttpError({ status: data.status, payload: data.payload, message: "Refresh khong thanh cong , server trả về " })
         }
     }
     // Đảm bảo logic dưới đây chỉ chạy ở phía client (browser)

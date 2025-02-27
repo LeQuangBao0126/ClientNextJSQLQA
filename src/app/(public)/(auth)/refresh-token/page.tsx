@@ -1,6 +1,6 @@
 'use client'
-import { checkAndRefreshToken,getRefreshTokenFromLocalStorage } from '@/lib/utils'
-import {  useRouter, useSearchParams } from 'next/navigation'
+import { checkAndRefreshToken, getRefreshTokenFromLocalStorage } from '@/lib/utils'
+import { useRouter, useSearchParams } from 'next/navigation'
 import React, { Suspense, useEffect } from 'react'
 function RefreshToken() {
 
@@ -11,17 +11,17 @@ function RefreshToken() {
 
     useEffect(() => {
         if (getRefreshTokenFromLocalStorage()) {
-
             checkAndRefreshToken({
                 onError: () => {
                     console.log("error ")
                 },
                 onSuccess: () => {
                     router.push(redirectPathname || '/')
-                }
+                },
             })
         } else {
             router.push('/')
+            return
         }
 
 
@@ -32,7 +32,6 @@ function RefreshToken() {
     )
 }
 const RefreshTokenPage = () => {
-    
     return <Suspense>
         <RefreshToken />
     </Suspense>

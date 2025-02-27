@@ -12,8 +12,12 @@ function Logout() {
     const searchParams = useSearchParams()
     const refreshToken = searchParams.get('refreshToken')
     const accessToken = searchParams.get('accessToken')
+    // remove role 
     const { setRole } = useAppContext()
     // nếu refreshToken từ url = refreshToken thì mới cho logout 
+   
+    // remove socket 
+    
 
     useEffect(() => {
         if (ref.current
@@ -26,7 +30,6 @@ function Logout() {
         }
         ref.current = mutateAsync
         mutateAsync().then(() => {
-            console.log("Log out thanh cong ")
             ref.current = null
             setRole()
             router.push("/login")
@@ -35,7 +38,7 @@ function Logout() {
     }, [router])
 
     return (
-        <div>Logout Loading ....................... </div>
+        <div>Logout Loading</div>
     )
 }
 

@@ -8,6 +8,11 @@ const nextConfig: NextConfig = {
         hostname:"localhost",
         pathname: '/**',
       },
+      {
+        protocol:"https",
+        hostname:"placehold.co",
+        pathname: '/**',
+      },
     ],
   },
 };
